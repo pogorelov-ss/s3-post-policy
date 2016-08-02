@@ -1,1 +1,1 @@
-from s3_policy import S3Policy
+from .s3_policy import S3Policy
