@@ -6,7 +6,9 @@ import hashlib
 
 
 class S3Policy:
-    def __init__(self, bucket, key_prefix, access_key, content_max_size=20971520, acl='public-read', time_frame=240):
+
+    def __init__(self, bucket, key_prefix, access_key, content_max_size=20971520, acl='public-read', time_frame=240,
+                 content_type='image/png'):
         self.bucket_url = 'https://{}.s3.amazonaws.com'.format(bucket)
         self.bucket = bucket
         self.acl = acl
@@ -16,6 +18,7 @@ class S3Policy:
         self.content_max_size = content_max_size
         self.expiration = None
         self.policy = None
+        self.content_type = content_type
 
     def generate_policy_str(self):
         expiration = (datetime.utcnow() + timedelta(seconds=self.time_frame)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
@@ -52,7 +55,7 @@ class S3Policy:
                     'signature': signed,
                     'AWSAccessKeyId': to_unicode(self.access_key),
                     'acl': self.acl,
-                    'Content-Type': 'image/png',
+                    'Content-Type': self.content_type,
                     'success_action_status': '201',
                     'key': to_unicode(self.key_prefix),
                 }
