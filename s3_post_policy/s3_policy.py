@@ -6,9 +6,22 @@ import hashlib
 
 
 class S3Policy:
+    """
+    Generate s3 post policy and sign it
+    """
 
     def __init__(self, bucket, key_prefix, access_key, content_max_size=20971520, acl='public-read', time_frame=240,
                  content_type='image/png'):
+        """
+
+        :param bucket: s3 bucket name
+        :param key_prefix: full s3 key or key prefix
+        :param access_key: s3 access key
+        :param content_max_size: max file size
+        :param acl: Canned ACL from this doc http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html
+        :param time_frame: policy expiration in seconds
+        :param content_type: file content type
+        """             
         self.bucket_url = 'https://{}.s3.amazonaws.com'.format(bucket)
         self.bucket = bucket
         self.acl = acl
@@ -37,6 +50,11 @@ class S3Policy:
         self.policy = b64encode((dumps(policy_document).replace('\n', '').replace('\r', '')).encode('ascii'))
 
     def signed(self, secret_key):
+        """
+        Sign generated policy
+        :param secret_key: aws secret key
+        :return: dict with policy and extra data useful for creating post request
+        """
         def to_unicode(s):
             return s if type(s) == str else s.decode('unicode_escape')
         self.generate_policy_str()
